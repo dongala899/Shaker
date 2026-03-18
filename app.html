@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DigiDat InfoSystems</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/server-session.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <header>
+    <img
+      class="site-header-logo"
+      src="assets/Logo.jpeg"
+      alt="DigiDat InfoSystems"
+      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+    >
+    <h1 class="site-header-fallback">DigiDat InfoSystems</h1>
+  </header>
+
+  <div class="container">
+    <!-- Setup Section (Initial Data Entry) -->
+  <div id="setupSection" style="display: block;">
+  <div class="setup-top-action">
+    <button class="btn btn-primary" onclick="startInvoiceCreation()">
+      Back to Invoice
+    </button>
+  </div>
+  <div class="app-wrapper">
+
+    <!-- Company Setup -->
+    <div class="form-section">
+      <div class="button-group">
+        <button class="btn btn-success" onclick="saveCompanyInfo()">Add Company</button>
+      </div>
+
+      <div class="company-fields-grid">
+        <div class="form-group">
+          <label>Company Name</label>
+          <input type="text" id="companyName">
+        </div>
+
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="text" id="companyPhone">
+        </div>
+
+        <div class="form-group field-span-2">
+          <label>Address</label>
+          <textarea id="companyAddress"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="companyEmail">
+        </div>
+
+        <div class="form-group">
+          <label>GSTIN</label>
+          <input type="text" id="companyGST">
+        </div>
+
+        <div class="form-group">
+          <label>Website</label>
+          <input type="text" id="companyWebsite">
+        </div>
+
+        <div class="form-group">
+          <label>Bank Name</label>
+          <input type="text" id="companyBank">
+        </div>
+
+        <div class="form-group">
+          <label>Account Number</label>
+          <input type="text" id="companyAccount">
+        </div>
+
+        <div class="form-group">
+          <label>IFSC Code</label>
+          <input type="text" id="companyIFSC">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Customers Setup -->
+    <div class="form-section">
+      <div class="button-group">
+        <button id="customerActionBtn" class="btn btn-success" onclick="addCustomer()">+ Add Customer</button>
+        <button id="cancelCustomerEditBtn" class="btn btn-warning" onclick="cancelCustomerEdit()" style="display: none;">Cancel Edit</button>
+      </div>
+
+      <div class="customer-fields-grid">
+        <div class="form-group">
+          <label>Customer Name</label>
+          <input type="text" id="customerName">
+        </div>
+
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="text" id="customerPhone">
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="customerEmail">
+        </div>
+
+        <div class="form-group">
+          <label>State</label>
+          <input type="text" id="customerState" placeholder="Example: Telangana">
+        </div>
+
+        <div class="form-group">
+          <label>GSTIN</label>
+          <input type="text" id="customerGST">
+        </div>
+
+        <div class="form-group field-span-2">
+          <label>Address</label>
+          <textarea id="customerAddress"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Services Setup -->
+    <div class="form-section">
+      <div class="button-group">
+        <button id="itemActionBtn" class="btn btn-success" onclick="addItem()">+ Add Item/Service</button>
+        <button id="cancelItemEditBtn" class="btn btn-warning" onclick="cancelItemEdit()" style="display: none;">Cancel Edit</button>
+      </div>
+
+      <div class="item-fields-grid">
+        <div class="form-group">
+          <label for="itemType">Type:</label>
+          <select id="itemType">
+            <option value="Service">Service</option>
+            <option value="Product">Product</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Service/Item Name</label>
+          <input type="text" id="itemName">
+        </div>
+
+        <div class="form-group">
+          <label>HSN/SAC</label>
+          <input type="text" id="itemHsn" placeholder="Example: 998313">
+        </div>
+
+        <div class="form-group">
+          <label>Default Rate (INR)</label>
+          <input type="number" id="itemRate">
+        </div>
+
+        <div class="form-group field-span-2">
+          <label>Description</label>
+          <textarea id="itemDescription"></textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="form-section setup-lists-section">
+      <div class="setup-list-stack">
+        <div class="setup-list-card setup-list-card-customer">
+          <h3>Customer List</h3>
+          <div id="customersList"></div>
+        </div>
+
+        <div class="setup-list-card setup-list-card-item">
+          <h3>Items List</h3>
+          <div id="itemsList"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+    <!-- Main Invoice Creation Section -->
+    <div id="mainSection" style="display: none;">
+      <div style="margin-bottom: 15px;">
+        <div class="manage-toolbar">
+          <button class="btn btn-warning" onclick="backToSetup()">Manage Data</button>
+          <button class="btn btn-primary" onclick="openChangePasswordScreen()">Change Password</button>
+          <button class="btn btn-primary" onclick="downloadAppBackup()">Backup Data</button>
+          <button class="btn btn-primary" onclick="triggerRestoreBackup()">Restore Data</button>
+          <button class="btn btn-danger toolbar-logout-btn" onclick="logoutAndExit()">Logout</button>
+        </div>
+        <input
+          type="file"
+          id="restoreBackupInput"
+          accept="application/json,.json"
+          style="display: none;"
+          onchange="restoreAppBackup(event)"
+        >
+        <div class="workspace-nav" role="tablist" aria-label="Operations">
+          <button class="workspace-tab active" id="workspaceTabInvoice" onclick="showWorkspaceView('invoice')">Invoice</button>
+          <button class="workspace-tab" id="workspaceTabCustomerPos" onclick="showWorkspaceView('customer-pos')">Customer POs</button>
+          <button class="workspace-tab" id="workspaceTabPurchases" onclick="showWorkspaceView('purchases')">Purchases</button>
+          <button class="workspace-tab" id="workspaceTabDashboard" onclick="showWorkspaceView('dashboard')">Dashboard</button>
+        </div>
+      </div>
+      <div class="workspace-content">
+        <section id="invoiceWorkspace" class="workspace-panel active">
+          <div class="app-wrapper invoice-editor-shell">
+            <div class="form-section">
+              <h2>Create Invoice</h2>
+
+              <div class="create-invoice-fields-grid">
+                <div class="form-group invoice-field-compact">
+                  <label for="invoiceNumberDisplay">INV No:</label>
+                  <div id="invoiceNumberDisplay" style="padding: 10px 12px; background-color: #f0f0f0; border-radius: 4px; font-weight: bold;">
+                    INV-0001
+                  </div>
+                </div>
+
+                <div class="form-group invoice-field-compact">
+                  <label for="invoiceDate">Invoice Date:</label>
+                  <input type="date" id="invoiceDate" onchange="handleDateChange(event)">
+                </div>
+
+                <div class="form-group invoice-field-medium">
+                  <label for="poNumber">PO No:</label>
+                  <input type="text" id="poNumber" placeholder="Enter purchase order number">
+                </div>
+
+                <div class="form-group invoice-field-compact">
+                  <label for="poDate">PO Date:</label>
+                  <input type="date" id="poDate">
+                </div>
+
+                <div class="form-group invoice-field-wide">
+                  <label for="customerSelect">Select Customer:</label>
+                  <select id="customerSelect">
+                    <option value="">-- Select Customer --</option>
+                  </select>
+                </div>
+
+                <div class="form-group invoice-field-compact">
+                  <label for="roundOffSelect">Round Off:</label>
+                  <select id="roundOffSelect" onchange="handleRoundOffChange(event)">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                  </select>
+                </div>
+
+                <div class="form-group invoice-field-wide">
+                  <label for="customerPoSelect">Customer PO:</label>
+                  <select id="customerPoSelect">
+                    <option value="">-- Select Customer First --</option>
+                  </select>
+                </div>
+
+                <div class="form-group invoice-field-wide field-span-2">
+                  <label for="shippingAddress">Shipping Address:</label>
+                  <textarea id="shippingAddress" placeholder="Optional shipping address" onchange="handleShippingAddressChange(event)"></textarea>
+                </div>
+
+                <div class="form-group invoice-field-wide">
+                  <label for="itemSelect">Select Service/Item:</label>
+                  <select id="itemSelect">
+                    <option value="">-- Select Service/Item --</option>
+                  </select>
+                </div>
+
+                <div class="form-group invoice-field-compact">
+                  <label for="quantityInput">Quantity:</label>
+                  <input type="number" id="quantityInput" min="1" step="1" placeholder="Enter quantity">
+                </div>
+
+                <div class="form-group invoice-field-medium">
+                  <label for="rateInput">Rate per Unit (INR):</label>
+                  <input type="number" id="rateInput" min="0" step="0.01" placeholder="Enter rate">
+                </div>
+              </div>
+
+              <div class="button-group">
+                <button class="btn btn-success" onclick="addItemToInvoice()">+ Add Item/Service</button>
+                <button class="btn btn-warning" onclick="clearForm()">Clear Form</button>
+                <button class="btn btn-primary" onclick="exportAllInvoicesToExcel()">Export All Invoices (Excel)</button>
+              </div>
+
+              <h3 style="margin-top: 30px; margin-bottom: 15px;">Items in Invoice</h3>
+              <div class="invoice-items-table-wrap">
+                <table class="items-table">
+                  <thead>
+                    <tr>
+                      <th>S.No</th>
+                      <th>Item Description</th>
+                      <th>HSN/SAC</th>
+                      <th>Qty</th>
+                      <th>Rate with Tax</th>
+                      <th>Rate</th>
+                      <th>Total</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="invoiceItemsTableBody">
+                    <tr>
+                      <td colspan="8" style="text-align: center;">No items added yet</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="export-buttons invoice-editor-actions">
+                <button id="saveInvoiceBtn" class="btn btn-primary" onclick="saveInvoice()">Save Invoice</button>
+                <button class="btn btn-success" onclick="openInvoicePreviewPage()">Open Preview</button>
+                <button class="btn btn-primary" onclick="showInvoiceHistory()">Saved Invoices</button>
+              </div>
+
+              <div id="invoiceHistorySection" style="display:none; margin-top:20px;">
+                <h3>Saved Invoices</h3>
+                <div id="invoiceHistoryList"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="customerPoWorkspace" class="workspace-panel">
+          <section class="form-section register-section">
+            <h2>Customer Purchase Orders</h2>
+            <div class="button-group">
+              <button id="customerPoActionBtn" class="btn btn-success" onclick="saveCustomerPurchaseOrder()">+ Add Customer PO</button>
+              <button id="cancelCustomerPoEditBtn" class="btn btn-warning" onclick="cancelCustomerPurchaseOrderEdit()" style="display: none;">Cancel Edit</button>
+            </div>
+            <div class="register-fields-grid">
+              <div class="form-group">
+                <label for="customerPoCustomer">Customer</label>
+                <select id="customerPoCustomer">
+                  <option value="">-- Select Customer --</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="customerPoNumber">PO Number</label>
+                <input type="text" id="customerPoNumber" placeholder="Customer PO number">
+              </div>
+
+              <div class="form-group">
+                <label for="customerPoDate">PO Date</label>
+                <input type="date" id="customerPoDate">
+              </div>
+
+              <div class="form-group">
+                <label for="customerPoAmount">PO Amount (Auto)</label>
+                <input type="number" id="customerPoAmount" min="0" step="0.01" placeholder="0.00" readonly>
+              </div>
+
+              <div class="form-group">
+                <label for="customerPoStatus">Status</label>
+                <select id="customerPoStatus">
+                  <option value="Open">Open</option>
+                  <option value="Invoiced">Invoiced</option>
+                  <option value="Closed">Closed</option>
+                </select>
+              </div>
+
+              <div class="form-group field-span-3">
+                <label for="customerPoNotes">Notes</label>
+                <textarea id="customerPoNotes" placeholder="Scope, delivery note, or customer comments"></textarea>
+              </div>
+            </div>
+
+            <div class="register-list-card register-list-card-customer">
+              <h3>PO Items</h3>
+              <div class="register-fields-grid">
+                <div class="form-group">
+                  <label for="customerPoItemSelect">Item / Service</label>
+                  <select id="customerPoItemSelect">
+                    <option value="">-- Select Item --</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="customerPoItemQuantity">Quantity</label>
+                  <input type="number" id="customerPoItemQuantity" min="1" step="1" placeholder="1">
+                </div>
+
+                <div class="form-group">
+                  <label for="customerPoItemRate">Rate</label>
+                  <input type="number" id="customerPoItemRate" min="0" step="0.01" placeholder="0.00">
+                </div>
+
+                <div class="form-group field-span-3">
+                  <label for="customerPoItemDescription">Description</label>
+                  <textarea id="customerPoItemDescription" placeholder="Edit item description if needed"></textarea>
+                </div>
+              </div>
+              <div class="button-group">
+                <button class="btn btn-success" onclick="addItemToCustomerPurchaseOrderDraft()">+ Add PO Item</button>
+              </div>
+              <table class="items-table">
+                <thead>
+                  <tr>
+                    <th style="width: 60px;">S.No</th>
+                    <th>Item Description</th>
+                    <th style="width: 120px;">HSN/SAC</th>
+                    <th style="width: 90px; text-align: right;">Qty</th>
+                    <th style="width: 120px; text-align: right;">Rate</th>
+                    <th style="width: 130px; text-align: right;">Total</th>
+                    <th style="width: 70px;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="customerPoItemsTableBody">
+                  <tr>
+                    <td colspan="7" style="text-align: center;">No PO items added yet</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="register-list-card register-list-card-customer">
+              <h3>Received PO List</h3>
+              <div id="customerPurchaseOrdersList"></div>
+            </div>
+          </section>
+        </section>
+
+        <section id="purchaseWorkspace" class="workspace-panel">
+          <section class="form-section register-section">
+            <h2>Purchase Orders Placed</h2>
+            <div class="button-group">
+              <button id="organizationOrderActionBtn" class="btn btn-success" onclick="saveOrganizationPurchaseOrder()">+ Add Purchase Order</button>
+              <button id="cancelOrganizationOrderEditBtn" class="btn btn-warning" onclick="cancelOrganizationPurchaseOrderEdit()" style="display: none;">Cancel Edit</button>
+            </div>
+            <div class="register-fields-grid">
+              <div class="form-group">
+                <label for="organizationOrderVendor">Vendor / Supplier</label>
+                <input type="text" id="organizationOrderVendor" placeholder="Vendor name">
+              </div>
+
+              <div class="form-group">
+                <label for="organizationOrderNumber">Order / PO Number</label>
+                <input type="text" id="organizationOrderNumber" placeholder="Placed PO number">
+              </div>
+
+              <div class="form-group">
+                <label for="organizationOrderDate">Order Date</label>
+                <input type="date" id="organizationOrderDate">
+              </div>
+
+              <div class="form-group">
+                <label for="organizationOrderAmount">Order Amount (INR)</label>
+                <input type="number" id="organizationOrderAmount" min="0" step="0.01" placeholder="0.00">
+              </div>
+
+              <div class="form-group">
+                <label for="organizationOrderStatus">Status</label>
+                <select id="organizationOrderStatus">
+                  <option value="Placed">Placed</option>
+                  <option value="Received">Received</option>
+                  <option value="Closed">Closed</option>
+                </select>
+              </div>
+
+              <div class="form-group field-span-3">
+                <label for="organizationOrderNotes">Notes</label>
+                <textarea id="organizationOrderNotes" placeholder="Vendor note, material summary, or expected delivery"></textarea>
+              </div>
+            </div>
+            <div class="register-list-card register-list-card-organization">
+              <h3>Placed Order List</h3>
+              <div id="organizationPurchaseOrdersList"></div>
+            </div>
+          </section>
+        </section>
+
+        <section id="dashboardWorkspace" class="workspace-panel">
+          <section class="form-section dashboard-shell">
+            <h2>Sales And Purchases Dashboard</h2>
+            <div id="dashboardSummary" class="dashboard"></div>
+            <div id="dashboardGraph" class="dashboard-graph"></div>
+          </section>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/invoice.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/pdf-assets.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

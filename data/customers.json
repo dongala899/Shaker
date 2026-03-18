@@ -1,0 +1,47 @@
+[
+  {
+    "id": "CUST001",
+    "name": "ABC Corporation",
+    "email": "contact@abccorp.com",
+    "phone": "+91-98765-43210",
+    "address": "456 Business Ave, Mumbai 400001",
+    "gstin": "27ABCDE1234F2Z5",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "CUST002",
+    "name": "Global Tech Solutions",
+    "email": "billing@globaltechsol.com",
+    "phone": "+91-98765-43211",
+    "address": "789 Innovation Street, Bangalore 560001",
+    "gstin": "29GLOBALTECH1Z5",
+    "state": "Karnataka"
+  },
+  {
+    "id": "CUST003",
+    "name": "Digital Enterprises Ltd",
+    "email": "accounts@digitalent.com",
+    "phone": "+91-98765-43212",
+    "address": "321 Tech Park, Pune 411001",
+    "gstin": "27DIGITAL1234H1Z0",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "CUST004",
+    "name": "CloudBase Infrastructure",
+    "email": "finance@cloudbase.io",
+    "phone": "+91-98765-43213",
+    "address": "654 Cloud Avenue, Hyderabad 500001",
+    "gstin": "36CLOUDBASE1234F2Z5",
+    "state": "Telangana"
+  },
+  {
+    "id": "CUST005",
+    "name": "Smart Systems Pvt Ltd",
+    "email": "orders@smartsystems.in",
+    "phone": "+91-98765-43214",
+    "address": "987 Smart Way, Chennai 600001",
+    "gstin": "33SMARTSYS1234H1Z0",
+    "state": "Tamil Nadu"
+  }
+]

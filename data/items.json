@@ -1,0 +1,37 @@
+[
+  {
+    "id": "SRV001",
+    "name": "Consulting",
+    "description": "IT Consulting Services",
+    "hsnSac": "998313",
+    "defaultRate": 5000
+  },
+  {
+    "id": "SRV002",
+    "name": "Maintenance",
+    "description": "System Maintenance & Support",
+    "hsnSac": "998719",
+    "defaultRate": 2000
+  },
+  {
+    "id": "SRV003",
+    "name": "Annual Support",
+    "description": "Annual Support Contract",
+    "hsnSac": "998719",
+    "defaultRate": 15000
+  },
+  {
+    "id": "SRV004",
+    "name": "Development",
+    "description": "Custom Software Development",
+    "hsnSac": "998314",
+    "defaultRate": 8000
+  },
+  {
+    "id": "SRV005",
+    "name": "Training",
+    "description": "Staff Training & Workshops",
+    "hsnSac": "999293",
+    "defaultRate": 3500
+  }
+]
